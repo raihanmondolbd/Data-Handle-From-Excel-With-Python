@@ -1,20 +1,33 @@
+import datetime
 import os
 import openpyxl
 from utils import excelhandling as ex
 
 excel = os.path.abspath('rajulaw.xlsx')
 max_row = ex.getRowCount(excel, 'All Client Data')
-# max_col = ex.getColCount(excel, 'All Client Data')
+max_col = ex.getColCount(excel, 'All Client Data')
 # print(max_row)
 # print(max_col)
-
 wb = openpyxl.load_workbook(excel)
+one = 1
 email_list = []
+date = str(datetime.date.today())
+split_date = date.split('-')
+todays_format = f'{split_date[0][2:4]}{split_date[1]}{split_date[2]}'
+for row in range(2, max_row + 1):
+    row_all_value = str(ex.open_and_read_excel_file_by_row(excel, 'All Client Data', row)[0])
+    id = row_all_value[0:6]
+    # ex.writeData(excel, 'All Client Data', row, 1, f"{split_date[0]}_{'Dec'}_{row - 1}")
+    if id != todays_format:
+        ex.writeData(excel, 'All Client Data', row, 1, f'{todays_format}{one}')
+        one = one + 1
+        # ex.writeData(excel, 'All Client Data', row, 1, f"{split_date[0][2:4]}_{'Dec'}_{row - 1}")
+    else:
+        print('user already exist')
+
 for row in range(2, max_row + 1):
     service_request2 = ex.open_and_read_excel_file_by_row(excel, 'All Client Data', row)
     service_visa = service_request2[-1]
-    # email_list = service_request2[2]
-    # print(email_list)
     email_list.append(service_request2[2])
 
     if service_visa == "Student Visa":
